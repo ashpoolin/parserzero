@@ -10,7 +10,7 @@ const { LAMPORTS_PER_SOL, ComputeBudgetInstruction } = require('@solana/web3.js'
 
 function parseComputeBudgetInstruction(txContext, disc, instruction, ix) {
 
-    const program = 'stake'
+    const program = 'compute-budget'
     const signature = txContext.signature
     const slot = txContext.slot
     const blocktime = txContext.blocktime
