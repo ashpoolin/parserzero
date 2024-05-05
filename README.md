@@ -28,6 +28,7 @@ Native programs:
 - System
 - Stake
 - Vote
+- Compute Budget
 - SPL token (in progress)
 
 ## To Do (NOW)

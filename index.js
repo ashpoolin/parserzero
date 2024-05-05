@@ -20,6 +20,7 @@ const { parseSystemInstruction } = require('./src/system/system');
 const { parseStakeInstruction } = require('./src/stake/stake');
 const { parseVoteInstruction } = require('./src/vote/vote');
 const { parseSplTokenInstruction } = require('./src/spl-token/spl-token');
+const { parseComputeBudgetInstruction } = require('./src/compute-budget/compute-budget');
 const { logCSV } = require('./src/utils/csvlogger');
 
 
@@ -93,6 +94,10 @@ async function parseSolanaTransaction() {
       }
       else if (program == 'spl-token') {
         result = await parseSplTokenInstruction(txContext, disc, instruction, ix);
+        logCSV([result]);
+      }
+      else if (program == 'compute-budget') {
+        result = parseComputeBudgetInstruction(txContext, disc, instruction, ix);
         logCSV([result]);
       }
       else {
