@@ -80,9 +80,9 @@ function parseStakeInstruction(txContext, disc, instruction, ix) {
     }
     else if (instructionType == 'Merge') {
         const decoded = StakeInstruction.decodeMerge(instruction);
-        payload.stakePubkey = decoded.stakePubkey.toBase58()
-        payload.sourceStakePubKey = decoded.sourceStakePubKey.toBase58()
-        payload.authorizedPubkey = decoded.authorizedPubkey.toBase58()
+        payload.auth1 = decoded.authorizedPubkey.toBase58()
+        payload.source = decoded.sourceStakePubKey.toBase58()
+        payload.destination = decoded.stakePubkey.toBase58()
         payload.uiAmount = data?.transaction.message.accountKeys.map((key, index) => {
             if (key.toString() === decoded.stakePubkey.toString()) {
                 const balanceChange = postBalances[index] - preBalances[index];
@@ -93,18 +93,18 @@ function parseStakeInstruction(txContext, disc, instruction, ix) {
     }
     else if (instructionType == 'Split') {
         const decoded = StakeInstruction.decodeSplit(instruction);
-        payload.stakePubkey = decoded.stakePubkey.toBase58()
-        payload.splitStakePubkey = decoded.splitStakePubkey.toBase58()
-        payload.authorizedPubkey = decoded.authorizedPubkey.toBase58()
+        payload.auth1 = decoded.authorizedPubkey.toBase58()
+        payload.source = decoded.stakePubkey.toBase58()
+        payload.destination = decoded.splitStakePubkey.toBase58()
         payload.uiAmount = Number(decoded.lamports) / LAMPORTS_PER_SOL
     }
     else if (instructionType == 'Withdraw') {
         const decoded = StakeInstruction.decodeWithdraw(instruction);
-        payload.stakePubkey = decoded.stakePubkey.toBase58()
-        payload.toPubkey = decoded.toPubkey.toBase58()
-        payload.authorizedPubkey = decoded.authorizedPubkey.toBase58()
+        payload.auth1 = decoded.authorizedPubkey.toBase58()
+        payload.auth3 = decoded.custodianPubkey ? decoded.custodianPubkey.toBase58() : null
+        payload.source = decoded.stakePubkey.toBase58()
+        payload.destination = decoded.toPubkey.toBase58()
         payload.uiAmount = Number(decoded.lamports) / LAMPORTS_PER_SOL
-        payload.custodianPubkey = decoded.custodianPubkey?.toBase58()
     }
 
     return payload;

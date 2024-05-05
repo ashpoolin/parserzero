@@ -198,15 +198,15 @@ async function parseSplTokenInstruction(txContext, disc, instruction, ix) {
         // console.log(payload)
     }	
     else if (instructionType == 'TransferChecked') {
-        payload.programId = decoded.programId.toBase58()
-        payload.source = decoded.keys.source.pubkey.toBase58()
-        payload.mint = decoded.keys.mint.pubkey.toBase58()
-        payload.destination = decoded.keys.destination.pubkey.toBase58()
-        payload.ownerDestination = await SOLANA_CONNECTION.getAccountInfo(decoded.keys.destination.pubkey).then((data) => { return bs58.encode(Buffer.from(data.data).slice(32, 64)) });
-        payload.owner = decoded.keys.owner.pubkey.toBase58()
-        payload.multiSigners = decoded.keys.multiSigners.map(signer => signer.pubkey.toBase58())
-        payload.amount = Number(decoded.data.amount) //
-        payload.decimals = Number(decoded.data.decimals)
+      payload.auth1 = decoded.keys.owner.pubkey.toBase58()
+      payload.auth2 = await SOLANA_CONNECTION.getAccountInfo(decoded.keys.destination.pubkey).then((data) => { return bs58.encode(Buffer.from(data.data).slice(32, 64)) });
+      payload.source = decoded.keys.source.pubkey.toBase58()
+      payload.destination = decoded.keys.destination.pubkey.toBase58()
+      payload.misc1 = decoded.keys.multiSigners.map(signer => signer.pubkey.toBase58())
+      payload.misc2 = Number(decoded.data.decimals)
+      payload.misc3 = decoded.keys.mint.pubkey.toBase58()
+      payload.misc4 = decoded.programId.toBase58()
+      // payload.amount = Number(decoded.data.amount) //
         payload.uiAmount = Number(decoded.data.amount) / 10 ** Number(decoded.data.decimals)
     }	
     else if (instructionType == 'UiAmountToAmount') {
