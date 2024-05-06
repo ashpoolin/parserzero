@@ -12,28 +12,31 @@ const SOLANA_CONNECTION = new Connection(process.env.SOLANA_CONNECTION, 'confirm
     maxSupportedTransactionVersion: 0
   });
 
-// async function getTokenDataByATA(associatedTokenAccount) {
-//     const info = await SOLANA_CONNECTION.getAccountInfo(new PublicKey(associatedTokenAccount));
 
-//     // console.log(JSON.stringify(info))
-//     return info
-//     // const accounts = await SOLANA_CONNECTION.getParsedProgramAccounts(
-//     //     new PublicKey(associatedTokenAccount), // new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")
-//     //     {
-//     //       filters: [
-//     //         {
-//     //           dataSize: 165, // number of bytes
-//     //         },
-//     //         {
-//     //         //   memcmp: {
-//     //         //     offset: 32, // number of bytes
-//     //         //     bytes: MY_WALLET_ADDRESS, // base58 encoded string
-//     //         //   },
-//     //         },
-//     //       ],
-//     //     }
-//     //   );
-// }
+// SPL Token Instructions Key:
+// AmountToUiAmount       decodeAmountToUiAmountInstruction
+// Approve              	decodeApproveInstruction
+// ApproveChecked         decodeApproveCheckedInstruction
+// Burn             	    decodeBurnInstruction
+// BurnChecked            decodeBurnCheckedInstruction
+// CloseAccount           decodeCloseAccountInstruction
+// FreezeAccount          decodeFreezeAccountInstruction
+// InitializeAccount      decodeInitializeAccountInstruction
+// InitializeAccount2     decodeInitializeAccount2Instruction
+// InitializeAccount3     decodeInitializeAccount3Instruction
+// InitializeMint         decodeInitializeMintInstruction
+// InitializeMint2        decodeInitializeMint2Instruction
+// InitializeMultisig2    decodeInitializeMultisigInstruction
+// MintTo             	  decodeMintToInstruction
+// MintToChecked          decodeMintToCheckedInstruction
+// Revoke                 decodeRevokeInstruction
+// SetAuthority           decodeSetAuthorityInstruction
+// SyncNative             decodeSyncNativeInstruction
+// ThawAccount            decodeThawAccountInstruction
+// Transfer             	decodeTransferInstruction
+// TransferChecked        decodeTransferCheckedInstruction
+// UiAmountToAmount       decodeUiAmountToAmountInstruction
+
 
 async function getTokenAccountDetails(connection, tokenAccountAddress) {
     // Fetch the account info
@@ -95,55 +98,133 @@ async function parseSplTokenInstruction(txContext, disc, instruction, ix) {
        // Add the parsing logic specific to SPL-Token instructions here
        // Use the layouts imported above
 
+    // decode SPL token instructions using the common decodeInstruction function
     const decoded = decodeInstruction(instruction)
+
+    // cases for handling decoded instructions
     if (instructionType == 'AmountToUiAmount') {
-        // payload.decoded = decoded
+      payload.misc4 = decoded.programId.toBase58()
+      payload.misc3 = decoded.keys.mint.pubkey.toBase58()
+      payload.amount = Number(decoded.data.amount)
     }	
     else if (instructionType == 'Approve') {
-        
+      payload.auth1 = decoded.keys.owner.pubkey.toBase58()
+      payload.source = decoded.keys.account.pubkey.toBase58()
+      payload.destination = decoded.keys.delegate.pubkey.toBase58()
+      payload.misc1 = decoded.keys.multiSigners
+      payload.amount = Number(decoded.data.amount) // could fetch decimals and get uiAmount
+      payload.misc4 = decoded.programId.toBase58()
     }	
     else if (instructionType == 'ApproveChecked') {
-        
+      payload.auth1 = decoded.keys.owner.pubkey.toBase58()
+      payload.source = decoded.keys.account.pubkey.toBase58()
+      payload.destination = decoded.keys.delegate.pubkey.toBase58()
+      payload.misc1 = decoded.keys.multiSigners
+      payload.misc2 = decoded.data.decimals
+      payload.misc3 = decoded.keys.mint.pubkey.toBase58()
+      payload.misc4 = decoded.programId.toBase58()
+      payload.amount = Number(decoded.data.amount)
+      payload.uiAmount = Number(decoded.data.amount) / 10 ** Number(decoded.data.decimals)
     }	
     else if (instructionType == 'Burn') {
-        
+      payload.auth1 = decoded.keys.owner.pubkey.toBase58()
+      payload.source = decoded.keys.account.pubkey.toBase58()
+      payload.misc1 = decoded.keys.multiSigners
+      payload.misc3 = decoded.keys.mint.pubkey.toBase58()
+      payload.misc4 = decoded.programId.toBase58()
+      payload.amount = Number(decoded.data.amount) // could fetch decimals and get uiAmount
     }	
     else if (instructionType == 'BurnChecked') {
-        
+      payload.auth1 = decoded.keys.owner.pubkey.toBase58()
+      payload.source = decoded.keys.account.pubkey.toBase58()
+      payload.misc1 = decoded.keys.multiSigners
+      payload.misc2 = Number(decoded.data.decimals)
+      payload.misc3 = decoded.keys.mint.pubkey.toBase58()
+      payload.misc4 = decoded.programId.toBase58()
+      payload.amount = Number(decoded.data.amount)
+      payload.uiAmount = Number(decoded.data.amount) / 10 ** Number(decoded.data.decimals)
     }	
     else if (instructionType == 'CloseAccount') {
-        
+      payload.auth1 = decoded.keys.authority.pubkey.toBase58()
+      payload.source = decoded.keys.account.pubkey.toBase58()
+      payload.destination = decoded.keys.destination.pubkey.toBase58()
+      payload.misc1 = decoded.keys.multiSigners
+      payload.misc4 = decoded.programId.toBase58()
+      // payload.data = decoded.data // = { instruction: TokenInstruction.CloseAccount; };
     }	
     else if (instructionType == 'FreezeAccount') {
-        
+      payload.auth1 = decoded.keys.authority.pubkey.toBase58()
+      payload.source = decoded.keys.account.pubkey.toBase58()
+      payload.misc1 = decoded.keys.multiSigners
+      payload.misc3 = decoded.keys.mint.pubkey.toBase58()
+      payload.misc4 = decoded.programId.toBase58()
+      // payload.data = decoded.data  // { instruction: TokenInstruction.FreezeAccount; };
     }	
     else if (instructionType == 'InitializeAccount') {
-        
+      payload.auth1 = decoded.keys.owner.pubkey.toBase58()
+      payload.source = decoded.keys.account.pubkey.toBase58()
+      // payload.misc2 = decoded.keys.rent.pubkey.toBase58() -- who cares about this field? it just names the SysvarRent publickey
+      payload.misc3 = decoded.keys.mint.pubkey.toBase58()
+      payload.misc4 = decoded.programId.toBase58()
+      // payload.data = decoded.data  // { instruction: TokenInstruction.InitializeAccount; };
     }	
     else if (instructionType == 'InitializeAccount2') {
-        
+      payload.auth1 = decoded.data.owner.pubkey.toBase58()
+      payload.source = decoded.keys.account.pubkey.toBase58()
+      // payload.misc2 = decoded.keys.rent.pubkey.toBase58()
+      payload.misc3 = decoded.keys.mint.pubkey.toBase58()
+      payload.misc4 = decoded.programId.toBase58()
     }	
     else if (instructionType == 'InitializeAccount3') {
-        
+      payload.auth1 = decoded.data.owner.pubkey.toBase58()
+      payload.source = decoded.keys.account.pubkey.toBase58()
+      payload.misc3 = decoded.keys.mint.pubkey.toBase58()
+      payload.misc4 = decoded.programId.toBase58()
+    }	
+    else if (instructionType == 'InitializeImmutableOwner') { // add to spreadsheet
+      payload.misc4 = decoded.programId.toBase58()
+      payload.account = decoded.keys.account.pubkey.toBase58()
+      payload.data = decoded.data // fix this!
     }	
     else if (instructionType == 'InitializeMint') {
-        
+      payload.auth1 = decoded.data.mintAuthority
+      // payload.misc2 = decoded.keys.rent // conflict => need misc0 ?
+      payload.misc2 = Number(decoded.data.decimals)
+      payload.misc3 = decoded.keys.mint.pubkey.toBase58()
+      payload.misc4 = decoded.programId.toBase58()
     }	
     else if (instructionType == 'InitializeMint2') {
+      payload.auth1 = decoded.data.mintAuthority.pubkey.toBase58()
+      payload.misc2 = Number(decoded.data.decimals)
+      payload.misc3 = decoded.keys.mint.pubkey.toBase58()
+      payload.misc4 = decoded.programId.toBase58()
+    }	
+    else if (instructionType == 'InitializeMintCloseAuthority') { // add to spreadsheet
+      payload.auth1 = decoded.data.closeAuthority.pubkey.toBase58()
+      payload.misc3 = decoded.keys.mint.pubkey.toBase58()
+      payload.misc4 = decoded.programId.toBase58()
+    }	
+    else if (instructionType == 'InitializeMultisig') {
+      payload.source = decoded.keys.account.pubkey.toBase58()
+      payload.misc1 = decoded.keys.signers.map(signer => signer.pubkey.toBase58())
+      payload.misc2 = decoded.keys.rent.pubkey.toBase58()
+      payload.misc3 = decoded.data.m
+      payload.misc4 = decoded.programId.toBase58()
         
     }	
-    else if (instructionType == 'InitializeMultisig2') {
+    else if (instructionType == 'InitializeMultisig2') { // no functionality in spl-token currently
+        
+    }	
+    else if (instructionType == 'InitializePermanentDelegate') { // no functionality in spl-token currently
         
     }	
     else if (instructionType == 'MintTo') {
-        // example signature: 
-        // payload.decoded = decoded
-        // payload.programId = decoded.programId
-        // payload.mint = decoded.keys.mint
-        // payload.destination = decoded.keys.destination
-        // payload.authority = decoded.keys.authority
-        // payload.multiSigners = decoded.keys.multiSigners
-        // payload.data = decoded.data
+      payload.auth1 = decoded.keys.authority.pubkey.toBase58()
+      payload.destination = decoded.keys.destination.pubkey.toBase58()
+      payload.misc1 = decoded.keys.multiSigners.map(signer => signer.pubkey.toBase58())
+      payload.misc3 = decoded.keys.mint.pubkey.toBase58()
+      payload.misc4 = decoded.programId.toBase58()
+      payload.amount = decoded.data.amount // good to get fetch the token data (decimals, uiAmount)
 
         // const mint = data?.transaction.message.accountKeys[instruction.accounts[0]] // ok
         // const decimals = await getMintDecimals(SOLANA_CONNECTION, mint)
@@ -161,19 +242,44 @@ async function parseSplTokenInstruction(txContext, disc, instruction, ix) {
         
     }	
     else if (instructionType == 'MintToChecked') {
-        
+      payload.auth1 = decoded.keys.authority.pubkey.toBase58()
+      payload.destination = decoded.keys.destination.pubkey.toBase58()
+      payload.misc1 = decoded.keys.multiSigners.map(signer => signer.pubkey.toBase58())
+      payload.misc2 = decoded.data.decimals
+      payload.misc3 = decoded.keys.mint.pubkey.toBase58()
+      payload.misc4 = decoded.programId.toBase58()
+      payload.amount = decoded.data.amount
+      payload.uiAmount = Number(decoded.data.amount) / 10 ** Number(decoded.data.decimals)
     }	
+    else if (instructionType == 'Reallocate') { // not implemented in spl-token yet
+      
+    }	    
     else if (instructionType == 'Revoke') {
-        
+      payload.auth1 = decoded.keys.owner.pubkey.toBase58()
+      payload.source = decoded.keys.account.pubkey.toBase58()
+      payload.misc1 = decoded.keys.multiSigners //.map(signer => signer.pubkey.toBase58())
+      payload.misc4 = decoded.programId.toBase58()
+      // payload.data = decoded.data  // don't use data, just is data: { instruction: TokenInstruction.Revoke; };
     }	
     else if (instructionType == 'SetAuthority') {
-        
+      payload.auth1 = decoded.keys.currentAuthority.pubkey.toBase58()
+      payload.auth2 = decoded.data.newAuthority.pubkey.toBase58() // important info here
+      payload.source = decoded.keys.account.pubkey.toBase58()
+      payload.misc1 = decoded.keys.multiSigners.map(signer => signer.pubkey.toBase58())
+      payload.misc2 = decoded.data.authorityType // important info here
+      payload.misc4 = decoded.programId.toBase58()
     }	
     else if (instructionType == 'SyncNative') {
-        
+      payload.source = decoded.keys.account.pubkey.toBase58() // it's an array, might not work, maybe .map it
+      payload.misc4 = decoded.programId.toBase58()
     }	
     else if (instructionType == 'ThawAccount') {
-        
+      payload.auth1 = decoded.keys.authority.pubkey.toBase58()
+      payload.source = decoded.keys.account.pubkey.toBase58()
+      payload.misc1 = decoded.keys.multiSigners.map(signer => signer.pubkey.toBase58())
+      payload.misc3 = decoded.keys.mint.pubkey.toBase58()
+      payload.misc4 = decoded.programId.toBase58()
+      // payload.data = decoded.data 
     }	
     else if (instructionType == 'Transfer') {
         // const tokenData = await getTokenDataByATA(decoded.keys.source.pubkey.toBase58())
@@ -194,8 +300,6 @@ async function parseSplTokenInstruction(txContext, disc, instruction, ix) {
         payload.misc3 = mint
         payload.misc4 = decoded.programId.toBase58()
         payload.uiAmount = Number(decoded.data.amount) / 10 ** Number(decimals)
-
-        // console.log(payload)
     }	
     else if (instructionType == 'TransferChecked') {
       payload.auth1 = decoded.keys.owner.pubkey.toBase58()
@@ -207,13 +311,14 @@ async function parseSplTokenInstruction(txContext, disc, instruction, ix) {
       payload.misc3 = decoded.keys.mint.pubkey.toBase58()
       payload.misc4 = decoded.programId.toBase58()
       // payload.amount = Number(decoded.data.amount) //
-        payload.uiAmount = Number(decoded.data.amount) / 10 ** Number(decoded.data.decimals)
+      payload.uiAmount = Number(decoded.data.amount) / 10 ** Number(decoded.data.decimals)
     }	
     else if (instructionType == 'UiAmountToAmount') {
-        // payload.decoded = decoded
+      payload.amount = Number(decoded.data.amount)
+      payload.misc3 = decoded.keys.mint.pubkey.toBase58()
+      payload.misc4 = decoded.programId.toBase58()
     }
     else {
-        // payload.decoded = decoded
         
     }	
 

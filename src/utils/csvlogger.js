@@ -20,6 +20,7 @@ function logCSV(jsonData) {
       misc3: 'misc3',
       misc4: 'misc4',
       uiAmount: 'uiAmount',
+      amount: 'amount',
       signers: 'signers'
     };
     // Convert JSON data to CSV

@@ -21,6 +21,7 @@ const { parseStakeInstruction } = require('./src/stake/stake');
 const { parseVoteInstruction } = require('./src/vote/vote');
 const { parseSplTokenInstruction } = require('./src/spl-token/spl-token');
 const { parseComputeBudgetInstruction } = require('./src/compute-budget/compute-budget');
+const { parseUnknownInstruction } = require('./src/unknown');
 const { logCSV } = require('./src/utils/csvlogger');
 
 
@@ -39,6 +40,7 @@ async function parseSolanaTransaction() {
       maxSupportedTransactionVersion: 0
     });
     
+    // console.log(JSON.stringify(data, null, 2));
     const signers = data?.transaction.message.accountKeys.slice(0, data?.transaction.message.header.numRequiredSignatures) || null;
     const transaction = data;
     const txContext = {};
@@ -48,6 +50,7 @@ async function parseSolanaTransaction() {
     txContext.err = data?.meta.err;
     txContext.fee = data?.meta.fee / LAMPORTS_PER_SOL;
     txContext.data = data;
+    // txContext.signers = "";
     txContext.signers = signers;
 
     data?.transaction.message.instructions.map(async (instr, index) => {
@@ -66,7 +69,7 @@ async function parseSolanaTransaction() {
         programId,
         data: dataBuffer
       });
-      const program = programMap.get(programId.toBase58());
+      const program = programMap.get(programId.toBase58()) || "unknown";
 
       const ix = bs58.decode(instr.data);
       let disc;
@@ -101,7 +104,8 @@ async function parseSolanaTransaction() {
         logCSV([result]);
       }
       else {
-
+        result = parseUnknownInstruction(txContext, disc, instruction, ix, program);
+        logCSV([result]);
       }
     });
 
