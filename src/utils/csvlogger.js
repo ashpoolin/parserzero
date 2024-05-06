@@ -19,9 +19,12 @@ function logCSV(jsonData) {
       misc2: 'misc2',
       misc3: 'misc3',
       misc4: 'misc4',
-      uiAmount: 'uiAmount',
       amount: 'amount',
-      signers: 'signers'
+      uiAmount: 'uiAmount',
+      signers: 'signers',
+      owner: 'owner',
+      ownerBalanceChanges: 'ownerBalanceChanges',
+      ownerTokenBalanceChanges: 'ownerTokenBalanceChanges'
     };
     // Convert JSON data to CSV
     const csvOutput = stringify(jsonData, { header: true, columns: columns });

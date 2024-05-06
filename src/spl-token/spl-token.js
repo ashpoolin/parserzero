@@ -13,7 +13,7 @@ const SOLANA_CONNECTION = new Connection(process.env.SOLANA_CONNECTION, 'confirm
   });
 
 
-// SPL Token Instructions Key:
+// SPL Token Instructions Key: (these are not really needed, since decodeInstruction handles the logic. But they are here for reference)
 // AmountToUiAmount       decodeAmountToUiAmountInstruction
 // Approve              	decodeApproveInstruction
 // ApproveChecked         decodeApproveCheckedInstruction
@@ -82,6 +82,9 @@ async function parseSplTokenInstruction(txContext, disc, instruction, ix) {
     const fee = txContext.fee
     const data = txContext.data
     const signers = txContext.signers
+    const owner = txContext.owner
+    const ownerBalanceChanges = txContext.ownerBalanceChanges
+    const ownerTokenBalanceChanges = txContext.ownerTokenBalanceChanges
     // const instructionType = stakeProgramDiscriminatorMap.get(disc);
     const instructionType = TokenInstructionLookup[disc];
     // const instructionType = decodeInstructionType(instruction);
@@ -95,6 +98,9 @@ async function parseSplTokenInstruction(txContext, disc, instruction, ix) {
     payload.blocktime = blocktime
     payload.fee = fee
     payload.signers = signers
+    payload.owner = owner
+    payload.ownerBalanceChanges = ownerBalanceChanges
+    payload.ownerTokenBalanceChanges = ownerTokenBalanceChanges
        // Add the parsing logic specific to SPL-Token instructions here
        // Use the layouts imported above
 

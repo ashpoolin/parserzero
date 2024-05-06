@@ -17,6 +17,9 @@ function parseVoteInstruction(txContext, disc, instruction, ix) {
     const fee = txContext.fee
     const data = txContext.data
     const signers = txContext.signers
+    const owner = txContext.owner
+    const ownerBalanceChanges = txContext.ownerBalanceChanges
+    const ownerTokenBalanceChanges = txContext.ownerTokenBalanceChanges
     const instructionType = VoteInstruction.decodeInstructionType(instruction);
 
     const payload = {}
@@ -28,6 +31,9 @@ function parseVoteInstruction(txContext, disc, instruction, ix) {
     payload.blocktime = blocktime
     payload.fee = fee
     payload.signers = signers
+    payload.owner = owner
+    payload.ownerBalanceChanges = ownerBalanceChanges
+    payload.ownerTokenBalanceChanges = ownerTokenBalanceChanges
 
     const preBalances = data.meta.preBalances
     const postBalances = data.meta.postBalances
