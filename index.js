@@ -1,8 +1,4 @@
 // index.js
-// const { parseSystemInstruction } = require('./src/system/system');
-// const { parseStakeInstruction } = require('./src/stake/stake');
-// const { parseVoteInstruction } = require('./src/vote/vote');
-// const { parseSplTokenInstruction } = require('./src/spl-token/spl-token');
 
 require('dotenv').config();
 const bs58 = require('bs58');
@@ -41,7 +37,7 @@ async function parseSolanaTransaction() {
     let owner;
     if (userAccount) {
       owner = await getOwnerOrTokenOwner(userAccount);
-      console.log(`owner: ${owner}`);  
+      //console.log(`owner: ${owner}`);
     }
 
     // balance changes logic
@@ -54,10 +50,10 @@ async function parseSolanaTransaction() {
     // console.log(`postTokenBalances: ${JSON.stringify(postTokenBalances)}`);
 
     const ownerBalanceChanges = findOwnerBalanceChanges(accountKeys, preBalances, postBalances, owner)
-    console.log(`ownerBalanceChanges: ${JSON.stringify(ownerBalanceChanges)}`);
+    // console.log(`ownerBalanceChanges: ${JSON.stringify(ownerBalanceChanges)}`);
 
     const ownerTokenBalanceChanges = await findTokenBalanceChanges(preTokenBalances, postTokenBalances, owner, accountKeys)
-    console.log(`ownerTokenBalanceChanges: ${JSON.stringify(ownerTokenBalanceChanges)}`);
+    // console.log(`ownerTokenBalanceChanges: ${JSON.stringify(ownerTokenBalanceChanges)}`);
 
     // create txContext
     // console.log(JSON.stringify(data, null, 2));
