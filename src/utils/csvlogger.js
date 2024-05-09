@@ -4,7 +4,7 @@ function logCSV(jsonData) {
     // Define the columns if the JSON keys are known and consistent
     const columns = {
       program:	'program',
-      type:	'type',
+      type:	'instruction',
       signature:	'signature',
       err:	'err',
       slot:	'slot',

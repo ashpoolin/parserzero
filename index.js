@@ -51,13 +51,6 @@ async function parseSolanaTransaction() {
     const postBalances = data?.meta.postBalances;
     const preTokenBalances = data?.meta.preTokenBalances;
     const postTokenBalances = data?.meta.postTokenBalances;
-<<<<<<< HEAD
-=======
-    console.log(`preBalances: ${JSON.stringify(preBalances)}`);
-    console.log(`postBalances: ${JSON.stringify(postBalances)}`);
-    // console.log(`preTokenBalances: ${JSON.stringify(preTokenBalances)}`);
-    // console.log(`postTokenBalances: ${JSON.stringify(postTokenBalances)}`);
->>>>>>> 24930361a6e2cabaaf8013e5100675a51c670a35
 
     // console.log(JSON.stringify(data, null, 2));
 
