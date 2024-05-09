@@ -18,9 +18,10 @@ Here, I present ParserZero. A free, open-source, bare-bones Solana transaction p
 ## Process
 - You'll need a list of signatures to parse. The `signatures.js` helper script can do this for you: `node signatures.js <ADDRESS> <MAX NUMBER OF SIGNATURES TO RETRIEVE>`. The script will output a list of signatures in JSON format. 
 - To get a basic list of the signature hashes, do something like this: `node signatures.js <ADDRESS> <MAX SIGNATURES> | jq . | in2csv --format json | csvcut -c signature | tail -n +2 > <ADDRESS>_signatures.txt`
-- The parser is run using `node index.js <SIGNATURE>`. Doing this sequentially will take forever. So here, GNU parallel and a multicore CPU are used to parse the signatures in parallel. Here's how you do it:
-  - `cat <ADDRESS>_signatures.txt | parallel -j <NUMBER OF ACTIVE THREADS> node index.js {} > <ADDRESS>_parsed.csv`
-- You'll get a lot of headers (can be turned off setting `header: false` in `./src/utils/csvlogger.js`), errors and junk lines, which you'll want to get rid of. I do this is in a rather lazy way: `cat <ADDRESS>_parsed.csv | sort -bh | uniq > <ADDRESS>_parsed_uniq.csv`. This file should be workable, but check for errors and junk lines before you do you EDA.
+- The parser is run using `node index.js <SIGNATURE> <OWNER OR TOKEN ACCOUNT ADDRESS> <FORMAT = csv OR json>`. Doing this sequentially will take forever. So here, GNU parallel and a multicore CPU are used to parse the signatures in parallel. Here's how you do it:
+  - `cat <ADDRESS>_signatures.txt | parallel -j <NUMBER OF ACTIVE THREADS> node index.js {} <OPTIONAL: OWNER OR TOKEN ACCOUNT ADDRESS> <FORMAT: csv OR json> > <ADDRESS>_parsed.csv`
+- You can include an owner or token account address to fetch the pre/post/delta for SOL and token balances. These are returned as an object. This can help dramatically when trying to determine what the effect of a transaction is on the wallet of interest. Leave it blank if you don't care, the objects will return null/empty.
+- Output: If you use 'csv' output you'll get a lot of headers (can be turned off setting `header: false` in `./src/utils/csvlogger.js`), errors and junk lines, which you'll want to get rid of. I do this is in a rather lazy way: `cat <ADDRESS>_parsed.csv | sort -bh | uniq > <ADDRESS>_parsed_uniq.csv`. This file should be workable, but check for errors and junk lines before you do you EDA.
 - Once you have your parsed data, load into a spreadsheet, database, or whatever you like to analyze.
 
 ## Current Support
@@ -29,14 +30,17 @@ Native programs:
 - Stake
 - Vote
 - Compute Budget
-- SPL token (in progress)
+- SPL token
+- Unsupported programs return balance changes a program name (if known), and the program ID so that you can get a sense of what's going on
 
 ## To Do (NOW)
-- return basic program / unparsed default response (w/ program address lookup)
+- IDL-based module for a popular program (e.g. Jupiter).
+- generic IDL parser template (example) for users to add program support on their own 
+
+## Known Bugs
+The parser is good for about 50k signatures, at which point it seems there's some unclean exit from failed parsing of transactions, which causes the threads to stall (when using GNU parallel). Once all of the threads are stalled out the parsing will not progress. I've had to kill the job and restart from where I left off (not ideal). Currently looking into the root cause. 
 
 ## Feature Support (To-Do FUTURE)
-- final balances and balance changes of owner-specific accounts (must provide the owner of interest) 
-- generic IDL parser template (example) for users to add program support on their own 
 - Flatten CPI / inner instructions
 - Support for versioned transaction (version > 0), address lookup tables, and more
 - Support popular DeFi protocols: Jupiter, Raydium, Orca, Tensor, Magic Eden, etc.
@@ -48,3 +52,4 @@ This thing will get a whole lot better if people add support for the programs th
 Solana transactions are not nearly as opinionated as Ethereum ones. The expressivity this affords developers is amazing, but it also makes handling the colorful world of Solana transactions an incredible chore. CPIs and composability add layers of complexity to deciphering transactions, with highly compound arrangements of instructions, which may number in the dozens, and touch an equal many accounts. Generally, block explorers are unable to provide the full picture to power users, and we need something that can cut through the on-chain pollution that is clogging them. Some web-based parsers are incredibly good, but cannot handle large volumes of transactions in a reasonable amount of time. I have been using worse versions of this tool for more than a year, and I still find myself looking for greater power, accuracy, and flexibility. The ultimate goal is to have an extremely lightweight and versatile parser that can help you quickly obtain the data you're looking for. If you share this goal for increased visibility into Solana's on-chain activity, please consider donating some extra cycles to improve this tool. 
 
 Thank you.
+Ash

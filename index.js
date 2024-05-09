@@ -30,6 +30,7 @@ async function parseSolanaTransaction() {
   try {
     const signature = process.argv[2];
     const userAccount = process.argv[3]
+    const format = process.argv[4]
     const data = await SOLANA_CONNECTION.getTransaction(signature, {
       maxSupportedTransactionVersion: 0
     });
@@ -46,14 +47,10 @@ async function parseSolanaTransaction() {
     const postBalances = data?.meta.postBalances;
     const preTokenBalances = data?.meta.preTokenBalances;
     const postTokenBalances = data?.meta.postTokenBalances;
-    // console.log(`preTokenBalances: ${JSON.stringify(preTokenBalances)}`);
-    // console.log(`postTokenBalances: ${JSON.stringify(postTokenBalances)}`);
 
     const ownerBalanceChanges = findOwnerBalanceChanges(accountKeys, preBalances, postBalances, owner)
-    // console.log(`ownerBalanceChanges: ${JSON.stringify(ownerBalanceChanges)}`);
 
     const ownerTokenBalanceChanges = await findTokenBalanceChanges(preTokenBalances, postTokenBalances, owner, accountKeys)
-    // console.log(`ownerTokenBalanceChanges: ${JSON.stringify(ownerTokenBalanceChanges)}`);
 
     // create txContext
     // console.log(JSON.stringify(data, null, 2));
@@ -69,7 +66,6 @@ async function parseSolanaTransaction() {
     txContext.owner = owner;
     txContext.ownerBalanceChanges = ownerBalanceChanges;
     txContext.ownerTokenBalanceChanges = ownerTokenBalanceChanges;
-    // txContext.signers = "";
     txContext.signers = signers;
 
     // iterate through all instructions
@@ -107,27 +103,45 @@ async function parseSolanaTransaction() {
       // pass each instruction off to different parser modules
       if (program == 'system') {
         result = parseSystemInstruction(txContext, disc, instruction, ix);
-        logCSV([result]);
+        if (format == 'csv' )
+          logCSV([result]);
+        else if (format == 'json')
+          console.log(JSON.stringify(result));
       }
       else if (program == 'stake') {
         result = parseStakeInstruction(txContext, disc, instruction, ix);
-        logCSV([result]);
+        if (format == 'csv' )
+          logCSV([result]);
+        else if (format == 'json')
+          console.log(JSON.stringify(result));
       }
       else if (program == 'vote') {
         result = parseVoteInstruction(txContext, disc, instruction, ix);
-        logCSV([result]);
+        if (format == 'csv' )
+          logCSV([result]);
+        else if (format == 'json')
+          console.log(JSON.stringify(result));
       }
       else if (program == 'spl-token') {
         result = await parseSplTokenInstruction(txContext, disc, instruction, ix);
-        logCSV([result]);
+        if (format == 'csv' )
+          logCSV([result]);
+        else if (format == 'json')
+          console.log(JSON.stringify(result));
       }
       else if (program == 'compute-budget') {
         result = parseComputeBudgetInstruction(txContext, disc, instruction, ix);
-        logCSV([result]);
+        if (format == 'csv' )
+          logCSV([result]);
+        else if (format == 'json')
+          console.log(JSON.stringify(result));
       }
       else {
         result = parseUnknownInstruction(txContext, disc, instruction, ix, program);
-        logCSV([result]);
+        if (format == 'csv' )
+          logCSV([result]);
+        else if (format == 'json')
+          console.log(JSON.stringify(result));
       }
     });
 
