@@ -1,9 +1,4 @@
 // index.js
-// const { parseSystemInstruction } = require('./src/system/system');
-// const { parseStakeInstruction } = require('./src/stake/stake');
-// const { parseVoteInstruction } = require('./src/vote/vote');
-// const { parseSplTokenInstruction } = require('./src/spl-token/spl-token');
-
 require('dotenv').config();
 const bs58 = require('bs58');
 const BN = require('bn.js');

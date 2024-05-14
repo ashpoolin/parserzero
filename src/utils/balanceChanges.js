@@ -1,4 +1,4 @@
-   // vote.js
+// balanceChanges.js
 require('dotenv').config();
 const Buffer = require('buffer').Buffer;
 const { Connection, LAMPORTS_PER_SOL, PublicKey} = require('@solana/web3.js');
@@ -88,33 +88,6 @@ async function findTokenBalanceChanges(preTokenBalances, postTokenBalances, owne
   return tokenBalanceChanges;
 }
 
-
-  // async function findTokenBalanceChanges(preTokenBalances, postTokenBalances, ownerPublicKey, accountKeys) {
-  //   // const preTokenBalances = transactionData.meta.preTokenBalances;
-  //   // const postTokenBalances = transactionData.meta.postTokenBalances;
-  
-  //   // Filter token balances for accounts owned by the owner
-  //   const ownerPreTokenBalances = preTokenBalances.filter(balance => balance.owner === ownerPublicKey);
-  //   const ownerPostTokenBalances = postTokenBalances.filter(balance => balance.owner === ownerPublicKey);
-  
-  //   // Map to find balance changes
-  //   const tokenBalanceChanges = ownerPreTokenBalances.map(preBalance => {
-  //     const postBalance = ownerPostTokenBalances.find(post => post.accountIndex === preBalance.accountIndex);
-  //     if (postBalance) {
-  //       return {
-  //         accountIndex: preBalance.accountIndex,
-  //         account: accountKeys[preBalance.accountIndex],
-  //         mint: preBalance.mint,
-  //         preBalance: preBalance.uiTokenAmount.uiAmount,
-  //         postBalance: postBalance.uiTokenAmount.uiAmount,
-  //         changeBalance: postBalance.uiTokenAmount.uiAmount - preBalance.uiTokenAmount.uiAmount
-  //       };
-  //     }
-  //     return null;
-  //   }).filter(Boolean); // Filter out any null entries if postBalance was not found
-  
-  //   return tokenBalanceChanges;
-  // }
 
    module.exports = { getOwnerOrTokenOwner, findOwnerBalanceChanges, findTokenBalanceChanges };
 
