@@ -7,7 +7,7 @@ const { LAMPORTS_PER_SOL, VoteInstruction } = require('@solana/web3.js');
 // InitializeAccount    decodeInitializeAccount
 // Withdraw     	    decodeWithdraw
 
-function parseVoteInstruction(txContext, disc, instruction, ix) {
+async function parseVoteInstruction(txContext, disc, instruction, ix) {
 
     const program = 'vote'
     const signature = txContext.signature

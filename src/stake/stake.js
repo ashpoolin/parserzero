@@ -12,7 +12,7 @@ const { LAMPORTS_PER_SOL, StakeInstruction } = require('@solana/web3.js');
 // Split	            decodeSplit
 // Withdraw	            decodeWithdraw
 
-function parseStakeInstruction(txContext, disc, instruction, ix) {
+async function parseStakeInstruction(txContext, disc, instruction, ix) {
 
     const program = 'stake'
     const signature = txContext.signature

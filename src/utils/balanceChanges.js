@@ -45,7 +45,7 @@ const SOLANA_CONNECTION = new Connection(process.env.SOLANA_CONNECTION, 'confirm
  * @param {string} owner - Public key of the owner in base58 format.
  * @returns {Object|null} Object containing the owner, preBalance, postBalance, and changeBalance if found, otherwise null.
  */
-function findOwnerBalanceChanges(accountKeys, preBalances, postBalances, owner) {
+async function findOwnerBalanceChanges(accountKeys, preBalances, postBalances, owner) {
   const ownerBalanceChanges = accountKeys.map((key, index) => {
     if (key.toBase58() === owner) {
       return {

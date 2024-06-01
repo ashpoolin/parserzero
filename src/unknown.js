@@ -1,5 +1,5 @@
 
-const parseUnknownInstruction = (txContext, disc, instruction, ix, program) => {
+async function parseUnknownInstruction(txContext, disc, instruction, ix, program) {
 
     const signature = txContext.signature
     const slot = txContext.slot

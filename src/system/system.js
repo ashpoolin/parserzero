@@ -1,7 +1,7 @@
 // system.js
 const {LAMPORTS_PER_SOL, SystemInstruction} = require('@solana/web3.js');
 
-function parseSystemInstruction(txContext, disc, instruction, ix) {
+async function parseSystemInstruction(txContext, disc, instruction, ix) {
 
     const program = 'system'
     const signature = txContext.signature

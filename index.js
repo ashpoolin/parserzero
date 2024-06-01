@@ -27,6 +27,7 @@ const SOLANA_CONNECTION = new Connection(process.env.SOLANA_CONNECTION, 'confirm
 
 async function parseSolanaTransaction() {
   try {
+    const promises = []; // Array to hold promises
     const signature = process.argv[2];
     const userAccount = process.argv[3]
     const format = process.argv[4]
@@ -50,7 +51,7 @@ async function parseSolanaTransaction() {
     // console.log(JSON.stringify(data, null, 2));
 
 
-    const ownerBalanceChanges = findOwnerBalanceChanges(accountKeys, preBalances, postBalances, owner)
+    const ownerBalanceChanges = await findOwnerBalanceChanges(accountKeys, preBalances, postBalances, owner)
 
     const ownerTokenBalanceChanges = await findTokenBalanceChanges(preTokenBalances, postTokenBalances, owner, accountKeys)
 
@@ -105,49 +106,65 @@ async function parseSolanaTransaction() {
 
       // pass each instruction off to different parser modules
       if (program == 'system') {
-        result = parseSystemInstruction(txContext, disc, instruction, ix);
+        resultPromise = parseSystemInstruction(txContext, disc, instruction, ix);
+        promises.push(resultPromise.then(result => {
         if (format == 'csv' )
           logCSV([result]);
         else if (format == 'json')
           console.log(JSON.stringify(result));
+        }));
       }
       else if (program == 'stake') {
-        result = parseStakeInstruction(txContext, disc, instruction, ix);
+        resultPromise = parseStakeInstruction(txContext, disc, instruction, ix);
+        promises.push(resultPromise.then(result => {
         if (format == 'csv' )
           logCSV([result]);
         else if (format == 'json')
           console.log(JSON.stringify(result));
+        }));
       }
       else if (program == 'vote') {
-        result = parseVoteInstruction(txContext, disc, instruction, ix);
+        resultPromise = parseVoteInstruction(txContext, disc, instruction, ix);
+        promises.push(resultPromise.then(result => {
         if (format == 'csv' )
           logCSV([result]);
         else if (format == 'json')
           console.log(JSON.stringify(result));
+        }));
       }
       else if (program == 'spl-token') {
-        result = await parseSplTokenInstruction(txContext, disc, instruction, ix);
-        if (format == 'csv' )
-          logCSV([result]);
-        else if (format == 'json')
-          console.log(JSON.stringify(result));
+        const resultPromise = parseSplTokenInstruction(txContext, disc, instruction, ix);
+        promises.push(resultPromise.then(result => {
+          if (format == 'csv')
+            logCSV([result]);
+          else if (format == 'json')
+            console.log(JSON.stringify(result));
+        }));
       }
       else if (program == 'compute-budget') {
-        result = parseComputeBudgetInstruction(txContext, disc, instruction, ix);
-        if (format == 'csv' )
-          logCSV([result]);
-        else if (format == 'json')
-          console.log(JSON.stringify(result));
+        // promise wasn't needed, because parseComputeBudgetInstruction was not async until you messed with it.
+        const resultPromise = parseComputeBudgetInstruction(txContext, disc, instruction, ix);
+        promises.push(resultPromise.then(result => {
+          if (format == 'csv' )
+            logCSV([result]);
+          else if (format == 'json')
+            console.log(JSON.stringify(result));
+        }));
       }
       else {
-        result = parseUnknownInstruction(txContext, disc, instruction, ix, program);
+        resultPromise = parseUnknownInstruction(txContext, disc, instruction, ix, program);
+        promises.push(resultPromise.then(result => {
         if (format == 'csv' )
           logCSV([result]);
         else if (format == 'json')
           console.log(JSON.stringify(result));
+        }));
       }
     });
 
+    // Wait for all promises to resolve
+    await Promise.all(promises);
+    process.exit(0); // Exit with success code
   } catch (error) {
     console.error(error);
   }

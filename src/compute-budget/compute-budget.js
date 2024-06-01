@@ -8,7 +8,7 @@ const { LAMPORTS_PER_SOL, ComputeBudgetInstruction } = require('@solana/web3.js'
 // SetComputeUnitLimit  decodeSetComputeUnitLimit
 // SetComputeUnitPrice  decodeSetComputeUnitPrice
 
-function parseComputeBudgetInstruction(txContext, disc, instruction, ix) {
+async function parseComputeBudgetInstruction(txContext, disc, instruction, ix) {
 
     const program = 'compute-budget'
     const signature = txContext.signature
