@@ -296,7 +296,7 @@ async function parseSolanaTransaction() {
               console.log(JSON.stringify(result));
           }));
         }
-        else if (program == 'merkle-distributor' || program == 'jupiter-merkle-distributor' || program == 'jito-merkle-distributor') {
+        else if (program == 'merkle-distributor' || program == 'jupiter-merkle-distributor' || program == 'jito-merkle-distributor' || program == 'saber-merkle-distributor') {
           const resultPromise = parseMerkleDistInstruction(txContext, disc, instruction, ix);
           promises.push(resultPromise.then(result => {
             if (format == 'csv')
