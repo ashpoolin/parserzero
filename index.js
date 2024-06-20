@@ -17,7 +17,7 @@ const { parseVoteInstruction } = require('./src/vote/vote');
 const { parseSplTokenInstruction } = require('./src/spl-token/spl-token');
 const { parseComputeBudgetInstruction } = require('./src/compute-budget/compute-budget');
 const { getOwnerOrTokenOwner, findOwnerBalanceChanges, findTokenBalanceChanges } = require('./src/utils/balanceChanges');
-const { parseIONetInstruction } = require('./src/ionet_airdrop/ionet');
+const { parseMerkleDistInstruction } = require('./src/merkle-distributor/merkle-distributor');
 const { parseUnknownInstruction } = require('./src/unknown');
 const { logCSV } = require('./src/utils/csvlogger');
 
@@ -296,9 +296,8 @@ async function parseSolanaTransaction() {
               console.log(JSON.stringify(result));
           }));
         }
-        else if (program == 'ionet') {
-        // if (program == 'ionet') {
-          const resultPromise = parseIONetInstruction(txContext, disc, instruction, ix);
+        else if (program == 'merkle-distributor' || program == 'jupiter-merkle-distributor' || program == 'jito-merkle-distributor') {
+          const resultPromise = parseMerkleDistInstruction(txContext, disc, instruction, ix);
           promises.push(resultPromise.then(result => {
             if (format == 'csv')
               logCSV([result]);

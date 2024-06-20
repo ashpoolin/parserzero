@@ -75,7 +75,7 @@ let programMap = new Map([
     ['MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr','memo'],
     ['meRjbQXFNf5En86FXT2YPz1dQzLj4Yb3xK8u1MVgqpb','jupiter-merkle-distributor'],
     ['mERKcfxMC5SqJn4Ld4BUris3WKZZ1ojjWJ3A3J5CKxv','jito-merkle-distributor'],
-    ["MErKy6nZVoVAkryxAejJz2juifQ4ArgLgHmaJCQkU7N", "ionet"], // merkle-distributor
+    ["MErKy6nZVoVAkryxAejJz2juifQ4ArgLgHmaJCQkU7N", "merkle-distributor"], // merkle-distributor
     ['MERLuDFBMmsHnsBPZw2sDQZHvXFMwp8EdjudcU2HKky', 'Mercurial'],
     ['metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s','metaplex-token-metadata'],
     ['migrxZFChTqicHpNa1CAjPcF29Mui2JU2q4Ym7qQUTi','spam'],

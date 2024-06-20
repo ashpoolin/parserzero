@@ -1,1 +1,2 @@
 SOLANA_CONNECTION=https://mainnet.helius-rpc.com/?api-key=<INSERT YOUR API KEY>
+ANCHOR_WALLET=anchor_wallet.json

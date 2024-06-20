@@ -4,16 +4,16 @@ const BN = require('bn.js');
 const fs = require("fs");
 const { PublicKey } = require('@solana/web3.js');
 
-const idl = JSON.parse(fs.readFileSync("./src/ionet_airdrop/merkle_distributor.json", "utf8"));
+const idl = JSON.parse(fs.readFileSync("./src/merkle-distributor/merkle_distributor.json", "utf8"));
 
 const programId = new anchor.web3.PublicKey(
     "MErKy6nZVoVAkryxAejJz2juifQ4ArgLgHmaJCQkU7N"
   );
   
   // Create the program interface
-  const ionProgram = new anchor.Program(idl, programId);
+  const merkleProgram = new anchor.Program(idl, programId);
 
-async function parseIONetInstruction(txContext, disc, instruction, ix, program) {
+async function parseMerkleDistInstruction(txContext, disc, instruction, ix, program) {
 
     const signature = txContext.signature
     const slot = txContext.slot
@@ -35,7 +35,7 @@ async function parseIONetInstruction(txContext, disc, instruction, ix, program) 
         const ixHex = Array.prototype.map
           .call(ix, (x) => ("00" + x.toString(16)).slice(-2))
           .join("");
-        const decodedInstruction = ionProgram.coder.instruction.decode(ixHex);
+        const decodedInstruction = merkleProgram.coder.instruction.decode(ixHex);
 
         // console.log(JSON.stringify(decodedInstruction, null, 2));
 
@@ -43,7 +43,7 @@ async function parseIONetInstruction(txContext, disc, instruction, ix, program) 
         // const amount = new BN(amountHex, 16).toString(10); // Convert hex to base10
     
     const payload = {}
-    payload.program = program ? program : 'ionet'
+    payload.program = program ? program : 'merkle-distributor'
     // payload.amount = decodedInstruction.amountUnlocked.toString('hex');
     // payload.amount = decodedInstruction.data.amountUnlocked
     payload.amount = new BN(decodedInstruction.data.amountUnlocked).toString(10);
@@ -71,5 +71,5 @@ async function parseIONetInstruction(txContext, disc, instruction, ix, program) 
     return payload;
 };
 
-module.exports = { parseIONetInstruction };
+module.exports = { parseMerkleDistInstruction };
 
