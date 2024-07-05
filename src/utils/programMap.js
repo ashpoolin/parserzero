@@ -37,7 +37,7 @@ let programMap = new Map([
     ['D3BBjqUdCYuP18fNvvMbPAZ8DpcRi4io2EsYHQawJDag', 'Balansol'],
     ['DCA265Vj8a9CEuX1eb1LWRnDT7uK6q1xMipnNyatn23M','jupiter-dca'],
     ['DecZY86MU5Gj7kppfUCEmd4LbXXuyZH1yHaP2NTqdiZB', 'Saber Decimal Wrapper'],
-    ['DeJBGdMFa1uynnnKiwrVioatTuHmNLpyFKnmB5kaFdzQ','spam'],
+    ['DeJBGdMFa1uynnnKiwrVioatTuHmNLpyFKnmB5kaFdzQ','phantom-assert-owner'],
     ['DiPbvUUJkDhV9jFtQsDFnMEMRJyjW5iS6NMwoySiW8ki','dualfinance'],
     ['DiSLRwcSFvtwvMWSs7ubBMvYRaYNYupa76ZSuYLe6D7j','tensor-claim?'],
     ['DjVE6JNiYqPL2QXyCUUh8rNjHrbz9hXHNYt99MQ59qw1','orca3'],

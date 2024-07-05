@@ -1,47 +1,53 @@
 const { stringify } = require('csv-stringify/sync');
 
+// Define the columns if the JSON keys are known and consistent
+const columns = {
+    program: 'program',
+    type: 'instruction',
+    signature: 'signature',
+    err: 'err',
+    slot: 'slot',
+    blocktime: 'blocktime',
+    fee: 'fee',
+    auth1: 'auth1',
+    auth2: 'auth2',
+    auth3: 'auth3',
+    source: 'source',
+    destination: 'destination',
+    misc1: 'misc1',
+    misc2: 'misc2',
+    misc3: 'misc3',
+    misc4: 'misc4',
+    amount: 'amount',
+    uiAmount: 'uiAmount',
+    signers: 'signers',
+    owner: 'owner',
+    // ownerBalanceChanges: 'ownerBalanceChanges',
+    preBalance_sol: 'preBalance_sol',
+    postBalance_sol: 'postBalance_sol',
+    changeBalance_sol: 'changeBalance_sol',
+    accountIndex_inc: 'accountIndex_inc',
+    account_inc: 'account_inc',
+    mint_inc: 'mint_inc',
+    preBalance_inc: 'preBalance_inc',
+    postBalance_inc: 'postBalance_inc',
+    changeBalance_inc: 'changeBalance_inc',
+    accountIndex_dec: 'accountIndex_dec',   
+    account_dec: 'account_dec',
+    mint_dec: 'mint_dec',
+    preBalance_dec: 'preBalance_dec',
+    postBalance_dec: 'postBalance_dec',
+    changeBalance_dec: 'changeBalance_dec',
+    ownerTokenBalanceChanges_overflow: 'ownerTokenBalanceChanges_overflow',
+    trade: 'trade'
+};
+
+function getCSVHeader() {
+    return "program,instruction,signature,err,slot,blocktime,fee,auth1,auth2,auth3,source,destination,misc1,misc2,misc3,misc4,amount,uiAmount,signers,owner,preBalance_sol,postBalance_sol,changeBalance_sol,accountIndex_inc,account_inc,mint_inc,preBalance_inc,postBalance_inc,changeBalance_inc,accountIndex_dec,account_dec,mint_dec,preBalance_dec,postBalance_dec,changeBalance_dec,ownerTokenBalanceChanges_overflow,trade"
+}
+
 function logCSV(jsonData) {
-    // Define the columns if the JSON keys are known and consistent
-    const columns = {
-        program: 'program',
-        type: 'instruction',
-        signature: 'signature',
-        err: 'err',
-        slot: 'slot',
-        blocktime: 'blocktime',
-        fee: 'fee',
-        auth1: 'auth1',
-        auth2: 'auth2',
-        auth3: 'auth3',
-        source: 'source',
-        destination: 'destination',
-        misc1: 'misc1',
-        misc2: 'misc2',
-        misc3: 'misc3',
-        misc4: 'misc4',
-        amount: 'amount',
-        uiAmount: 'uiAmount',
-        signers: 'signers',
-        owner: 'owner',
-        // ownerBalanceChanges: 'ownerBalanceChanges',
-        preBalance_sol: 'preBalance_sol',
-        postBalance_sol: 'postBalance_sol',
-        changeBalance_sol: 'changeBalance_sol',
-        accountIndex_inc: 'accountIndex_inc',
-        account_inc: 'account_inc',
-        mint_inc: 'mint_inc',
-        preBalance_inc: 'preBalance_inc',
-        postBalance_inc: 'postBalance_inc',
-        changeBalance_inc: 'changeBalance_inc',
-        accountIndex_dec: 'accountIndex_dec',
-        account_dec: 'account_dec',
-        mint_dec: 'mint_dec',
-        preBalance_dec: 'preBalance_dec',
-        postBalance_dec: 'postBalance_dec',
-        changeBalance_dec: 'changeBalance_dec',
-        ownerTokenBalanceChanges_overflow: 'ownerTokenBalanceChanges_overflow',
-        trade: 'trade'
-    };
+
 
     // Process each JSON object to flatten the ownerTokenBalanceChanges and ownerBalanceChanges fields
     const processedData = jsonData.map(entry => {
@@ -83,10 +89,17 @@ function logCSV(jsonData) {
     });
 
     // Convert JSON data to CSV
-    const csvOutput = stringify(processedData, { header: true, columns: columns });
+    // const csvOutput = stringify(processedData, { header: false, columns: columns });
+    const csvOutput = stringify(processedData, { 
+        header: false, 
+        columns: columns,
+        record_delimiter: 'unix',  // This uses the appropriate line ending for the OS
+        quoted: true,  // Ensure all fields are quoted to handle any commas in the data
+    }).trim();
 
     // Log the CSV output to the console
-    console.log(csvOutput);
+    // console.log(csvOutput);
+    return csvOutput;
 }
 
-module.exports = { logCSV };
+module.exports = { logCSV, getCSVHeader };

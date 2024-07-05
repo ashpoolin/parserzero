@@ -19,7 +19,8 @@ const { parseComputeBudgetInstruction } = require('./src/compute-budget/compute-
 const { getOwnerOrTokenOwner, findOwnerBalanceChanges, findTokenBalanceChanges } = require('./src/utils/balanceChanges');
 const { parseMerkleDistInstruction } = require('./src/merkle-distributor/merkle-distributor');
 const { parseUnknownInstruction } = require('./src/unknown');
-const { logCSV } = require('./src/utils/csvlogger');
+const { logCSV, getCSVHeader } = require('./src/utils/csvlogger');
+const { logJSON } = require('./src/utils/jsonlogger');
 
 
 const SOLANA_CONNECTION = new Connection(process.env.SOLANA_CONNECTION, 'confirmed', {
@@ -37,8 +38,8 @@ async function parseSolanaTransaction() {
     });
     // console.log(`data: ${JSON.stringify(data, null, 2)}`);
 
-
-
+    let jsonOutput = [];
+    let csvOutput = [getCSVHeader()];
     const tx_version = data?.version;
     // console.log(`tx_version: ${tx_version}`);
 
@@ -146,36 +147,40 @@ async function parseSolanaTransaction() {
           resultPromise = parseSystemInstruction(txContext, disc, instruction, ix);
           promises.push(resultPromise.then(result => {
             if (format == 'csv')
-              logCSV([result]);
+              csvOutput.push(logCSV([result]));
             else if (format == 'json')
-              console.log(JSON.stringify(result));
+              jsonOutput.push(logJSON([result]));
+              // console.log(JSON.stringify(result));
           }));
         }
         else if (program == 'stake') {
           resultPromise = parseStakeInstruction(txContext, disc, instruction, ix);
           promises.push(resultPromise.then(result => {
             if (format == 'csv')
-              logCSV([result]);
+              csvOutput.push(logCSV([result]));
             else if (format == 'json')
-              console.log(JSON.stringify(result));
+              jsonOutput.push(logJSON([result]));
+              // console.log(JSON.stringify(result));
           }));
         }
         else if (program == 'vote') {
           resultPromise = parseVoteInstruction(txContext, disc, instruction, ix);
           promises.push(resultPromise.then(result => {
             if (format == 'csv')
-              logCSV([result]);
+              csvOutput.push(logCSV([result]));
             else if (format == 'json')
-              console.log(JSON.stringify(result));
+              jsonOutput.push(logJSON([result]));
+              // console.log(JSON.stringify(result));
           }));
         }
         else if (program == 'spl-token') {
           const resultPromise = parseSplTokenInstruction(txContext, disc, instruction, ix);
           promises.push(resultPromise.then(result => {
             if (format == 'csv')
-              logCSV([result]);
+              csvOutput.push(logCSV([result]));
             else if (format == 'json')
-              console.log(JSON.stringify(result));
+              jsonOutput.push(logJSON([result]));
+              // console.log(JSON.stringify(result));
           }));
         }
         else if (program == 'compute-budget') {
@@ -183,18 +188,20 @@ async function parseSolanaTransaction() {
           const resultPromise = parseComputeBudgetInstruction(txContext, disc, instruction, ix);
           promises.push(resultPromise.then(result => {
             if (format == 'csv')
-              logCSV([result]);
+              csvOutput.push(logCSV([result]));
             else if (format == 'json')
-              console.log(JSON.stringify(result));
+              jsonOutput.push(logJSON([result]));
+              // console.log(JSON.stringify(result));
           }));
         }
         else {
           resultPromise = parseUnknownInstruction(txContext, disc, instruction, ix, program);
           promises.push(resultPromise.then(result => {
             if (format == 'csv')
-              logCSV([result]);
+              csvOutput.push(logCSV([result]));
             else if (format == 'json')
-              console.log(JSON.stringify(result));
+              jsonOutput.push(logJSON([result]));
+              // console.log(JSON.stringify(result));
           }));
         }
       });
@@ -233,7 +240,9 @@ async function parseSolanaTransaction() {
         });
         // console.log(`instruction: ${JSON.stringify(instruction)}`);
 
+        // console.log(`programId: ${programId}`)
         const program = programMap.get(programId.toBase58()) || "unknown";
+        console.log(`program: ${program}`)
 
         // fetch the instruction discriminator
         const ix = dataBuffer;
@@ -254,36 +263,40 @@ async function parseSolanaTransaction() {
           resultPromise = parseSystemInstruction(txContext, disc, instruction, ix);
           promises.push(resultPromise.then(result => {
             if (format == 'csv')
-              logCSV([result]);
+              csvOutput.push(logCSV([result]));
             else if (format == 'json')
-              console.log(JSON.stringify(result));
+              jsonOutput.push(logJSON([result]));
+              // console.log(JSON.stringify(result));
           }));
         }
         else if (program == 'stake') {
           resultPromise = parseStakeInstruction(txContext, disc, instruction, ix);
           promises.push(resultPromise.then(result => {
             if (format == 'csv')
-              logCSV([result]);
+              csvOutput.push(logCSV([result]));
             else if (format == 'json')
-              console.log(JSON.stringify(result));
+              jsonOutput.push(logJSON([result]));
+              // console.log(JSON.stringify(result));
           }));
         }
         else if (program == 'vote') {
           resultPromise = parseVoteInstruction(txContext, disc, instruction, ix);
           promises.push(resultPromise.then(result => {
             if (format == 'csv')
-              logCSV([result]);
+              csvOutput.push(logCSV([result]));
             else if (format == 'json')
-              console.log(JSON.stringify(result));
+              jsonOutput.push(logJSON([result]));
+              // console.log(JSON.stringify(result));
           }));
         }
         else if (program == 'spl-token') {
           const resultPromise = parseSplTokenInstruction(txContext, disc, instruction, ix);
           promises.push(resultPromise.then(result => {
             if (format == 'csv')
-              logCSV([result]);
+              csvOutput.push(logCSV([result]));
             else if (format == 'json')
-              console.log(JSON.stringify(result));
+              jsonOutput.push(logJSON([result]));
+              // console.log(JSON.stringify(result)); 
           }));
         }
         else if (program == 'compute-budget') {
@@ -291,34 +304,145 @@ async function parseSolanaTransaction() {
           const resultPromise = parseComputeBudgetInstruction(txContext, disc, instruction, ix);
           promises.push(resultPromise.then(result => {
             if (format == 'csv')
-              logCSV([result]);
+              csvOutput.push(logCSV([result]));
             else if (format == 'json')
-              console.log(JSON.stringify(result));
+              jsonOutput.push(logJSON([result]));
+              // console.log(JSON.stringify(result));
           }));
         }
         else if (program == 'merkle-distributor' || program == 'jupiter-merkle-distributor' || program == 'jito-merkle-distributor' || program == 'saber-merkle-distributor') {
           const resultPromise = parseMerkleDistInstruction(txContext, disc, instruction, ix);
           promises.push(resultPromise.then(result => {
             if (format == 'csv')
-              logCSV([result]);
+              csvOutput.push(logCSV([result]));
             else if (format == 'json')
-              console.log(JSON.stringify(result));
+              jsonOutput.push(logJSON([result]));
+              // console.log(JSON.stringify(result));
           }));
         }
         else {
+          console.log(`parsing an unknown instruction: ${program}`)
           resultPromise = parseUnknownInstruction(txContext, disc, instruction, ix, program);
           promises.push(resultPromise.then(result => {
             if (format == 'csv')
-              logCSV([result]);
+              csvOutput.push(logCSV([result]));
             else if (format == 'json')
-              console.log(JSON.stringify(result));
+              jsonOutput.push(logJSON([result]));
+              // console.log(JSON.stringify(result));
           }));
         }
       });
     }
 
+//  // Process inner instructions
+// if (data?.meta?.innerInstructions) {
+//   console.log("Processing inner instructions...")
+//   data.meta.innerInstructions.forEach((innerInstructionSet, index) => {
+//     // console.log(`Inner instruction set: ${JSON.stringify(innerInstructionSet, null, 2)}`)
+//     innerInstructionSet.instructions.forEach((instr, innerIndex) => {
+//       const { accounts, data: instrData, programIdIndex } = instr;
+//       // console.log(`inner instruction: ${JSON.stringify(instr, null, 2)}`)
+//       // console.log(`inner instruction accounts: ${JSON.stringify(accounts, null, 2)}`)
+//       // console.log(`inner instruction data: ${JSON.stringify(instrData, null, 2)}`)
+//       // console.log(`inner instruction programIdIndex: ${JSON.stringify(programIdIndex, null, 2)}`)
+//       let keys, programId;
+
+//       if (tx_version === "legacy") {
+//         keys = accounts.map(accountIndex => ({
+//           pubkey: new PublicKey(transaction.transaction.message.accountKeys[accountIndex]),
+//           isSigner: transaction.transaction.message.isAccountSigner(accountIndex),
+//           isWritable: transaction.transaction.message.isAccountWritable(accountIndex)
+//         }));
+//         // console.log(`inner instruction keys: ${JSON.stringify(keys, null, 2)}`)
+//         programId = new PublicKey(transaction.transaction.message.accountKeys[programIdIndex]);
+//       } else if (tx_version === 0) {
+//         keys = accounts.map(accountIndex => ({
+//           pubkey: new PublicKey(transaction.transaction.message.staticAccountKeys[accountIndex]),
+//           isSigner: transaction.transaction.message.header.numRequiredSignatures > accountIndex,
+//           isWritable: transaction.transaction.message.header.numReadonlySignedAccounts > accountIndex ||
+//             transaction.transaction.message.header.numReadonlyUnsignedAccounts > (accountIndex - transaction.transaction.message.header.numRequiredSignatures)
+//         }));
+//         // console.log(`inner instruction keys: ${JSON.stringify(keys, null, 2)}`)
+//         programId = new PublicKey(transaction.transaction.message.staticAccountKeys[programIdIndex]);
+//       } else {
+//         console.error(`Unsupported transaction version: ${tx_version}`);
+//         return;
+//       }
+//       console.log(`we made it here!`)
+//       const dataBuffer = Buffer.from(bs58.decode(instrData));
+//       // console.log(`inner instruction dataBuffer: ${JSON.stringify(dataBuffer, null, 2)}`)
+
+//       const instruction = new TransactionInstruction({
+//         keys,
+//         programId,
+//         data: dataBuffer
+//       });
+//       console.log(`we created a new compiled instruction`)
+//       // console.log(`instruction: ${JSON.stringify(instruction, null, 2)}`)
+//       const program = programMap.get(programId.toBase58()) || "unknown";
+//       console.log(`program: ${program}`)
+//       let disc;
+//       try {
+//         if (program === 'spl-token') {
+//           disc = dataBuffer.slice(0, 1);
+//         } else {
+//           disc = dataBuffer.slice(0, 4).readUInt32LE();
+//         }
+//       } catch (err) {
+//         disc = 999;
+//       }
+//       console.log(`disc: ${disc}`)
+
+//       let resultPromise;
+//       switch (program) {
+//         case 'system':
+//           console.log(`we are in the system case`)
+//           resultPromise = parseSystemInstruction(txContext, disc, instruction, dataBuffer);
+//           console.log(`resultPromise: ${JSON.stringify(resultPromise, null, 2)}`)
+//           break;
+//         case 'stake':
+//                     resultPromise = parseStakeInstruction(txContext, disc, instruction, dataBuffer);
+//           break;
+//         case 'vote':
+//           resultPromise = parseVoteInstruction(txContext, disc, instruction, dataBuffer);
+//           break;
+//         case 'spl-token':
+//           resultPromise = parseSplTokenInstruction(txContext, disc, instruction, dataBuffer);
+//           break;
+//         case 'compute-budget':
+//           resultPromise = parseComputeBudgetInstruction(txContext, disc, instruction, dataBuffer);
+//           break;
+//         case 'merkle-distributor':
+//         case 'jupiter-merkle-distributor':
+//         case 'jito-merkle-distributor':
+//         case 'saber-merkle-distributor':
+//           resultPromise = parseMerkleDistInstruction(txContext, disc, instruction, dataBuffer);
+//           break;
+//         default:
+//           resultPromise = parseUnknownInstruction(txContext, disc, instruction, dataBuffer, program);
+//       }
+
+//       promises.push(resultPromise.then(result => {
+//         result.isInnerInstruction = true;
+//         result.innerInstructionIndex = `${index}.${innerIndex}`;
+//         if (format === 'csv')
+//           csvOutput.push(logCSV([result]));
+//         else if (format === 'json')
+//           jsonOutput.push(logJSON([result]));
+//       }));
+//     });
+//   });
+// }
     // Wait for all promises to resolve
     await Promise.all(promises);
+
+    if (format == 'json') {
+      console.log(JSON.stringify(jsonOutput));
+    } else if (format == 'csv') {
+      console.log(csvOutput.join('\n'));
+      // console.log(csvOutput);
+      // csvOutput.map(line => console.log(line));
+    }
     process.exit(0); // Exit with success code
   } catch (error) {
     console.error(error);
